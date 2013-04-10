@@ -25,7 +25,7 @@ KissFormat.prototype.processInput = function() {
 	this.currentRow++;
 	this.inputStates = [];
 	while (this.currentRow != this.rows.length){
-		var splittedState = this.rows[this.currentRow].split(" ");
+		var splittedState = this.rows[this.currentRow].split(/ {1,}/);
 		if (splittedState.length == 4)
 			this.inputStates.push(splittedState);
 		this.currentRow++;
