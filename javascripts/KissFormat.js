@@ -14,6 +14,7 @@ function KissFormat () {
 
 KissFormat.prototype.processInput = function() {
 
+	$("#states-container").html("");
 	this.currentRow = 0;
 	this.rows = this.source().split("\n");
 	this.i = this.lookForNumber({header: ".i"});
