@@ -6,10 +6,7 @@ function KissInput () {
 
 	this.currentRow = 0;
 
-	// this.processInput();
-
 	ko.applyBindings(this, this.container[0]);
-
 
 }
 
@@ -22,9 +19,19 @@ KissInput.prototype.processInput = function() {
 	this.p = this.lookForNumber({header: ".p", rowToStart: this.currentRow});
 	this.s = this.lookForNumber({header: ".s", rowToStart: this.currentRow});
 
+	this.currentRow++;
+	this.inputStates = [];
+	while (this.currentRow != this.rows.length){
+		var splittedState = this.rows[this.currentRow].split(" ");
+		if (splittedState.length == 4)
+			this.inputStates.push(splittedState);
+		this.currentRow++;
+	}
+	console.log(this.inputStates);
 };
 
 KissInput.prototype.lookForNumber = function(options) {
+
 	var rowToStart = options.rowToStart || this.rowToStart; 
 	var pattern    = new RegExp("(" + options.header + " (\\d*))", "g")
 
