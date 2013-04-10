@@ -12,7 +12,11 @@
 	<script type="text/html" id="kiss-state-template">
 		<h2 data-bind="text: name"></h2>
 		<ol data-bind="foreach: products">
-			<li data-bind="text: destination">
+			<li>
+				<span data-bind="text: destination"></span>
+				<span data-bind="text: x_string"></span>
+				<span data-bind="text: y_string"></span>
+			</li>
 		</ol>
 	</script>
 	<div id="states-container"></div>

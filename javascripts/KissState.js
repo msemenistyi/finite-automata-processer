@@ -20,18 +20,18 @@ function KissState (options) {
 KissState.prototype.parseToObject = function(state) {
 	var x_string = "";
 	for (var i = 0; i < state[0].length; i++){
-		if (i == 1){
+		if (state[0][i] == 1){
 			x_string += "X" + i;
-		} else{
+		} else if (state[0][i] == 0){
 			x_string += "nX" + i;
 		}
 	}	
 	var y_string = "";
 	for (var i = 0; i < state[3].length; i++){
-		if (i == 1){
-			y_string += "X" + i;
-		} else{
-			y_string += "nX" + i;
+		if (state[3][i] == 1){
+			y_string += "Y" + i;
+		} else if (state[3][i] == 0){
+			y_string += "nY" + i;
 		}
 	}
 	return {
