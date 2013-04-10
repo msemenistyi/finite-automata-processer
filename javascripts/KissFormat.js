@@ -1,4 +1,4 @@
-function KissInput () {
+function KissFormat () {
 
 	this.container = $("#input-form");
 
@@ -6,11 +6,13 @@ function KissInput () {
 
 	this.currentRow = 0;
 
+	this.kissStates = ko.observableArray([]);
+
 	ko.applyBindings(this, this.container[0]);
 
 }
 
-KissInput.prototype.processInput = function() {
+KissFormat.prototype.processInput = function() {
 
 	this.currentRow = 0;
 	this.rows = this.source().split("\n");
@@ -27,10 +29,29 @@ KissInput.prototype.processInput = function() {
 			this.inputStates.push(splittedState);
 		this.currentRow++;
 	}
-	console.log(this.inputStates);
+	var statesArray = this.inputStates.slice();
+	var i = 0;
+	while (i < statesArray.length){
+		var candidate = statesArray[i];
+		var products = [];
+		for (var j = i + 1; j < statesArray.length; j++){
+			if (candidate[1] == statesArray[j][1]){
+				products.push(statesArray[j]);
+				statesArray.splice(j,1);
+				j--;
+			}
+		}
+		products.push(candidate);
+		var options = {
+			name: candidate[1],
+			products: products
+		}
+		statesArray.splice(i,1);
+		this.kissStates.push(new KissState(options));
+	}
 };
 
-KissInput.prototype.lookForNumber = function(options) {
+KissFormat.prototype.lookForNumber = function(options) {
 
 	var rowToStart = options.rowToStart || this.rowToStart; 
 	var pattern    = new RegExp("(" + options.header + " (\\d*))", "g")

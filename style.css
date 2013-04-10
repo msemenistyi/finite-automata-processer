@@ -1,11 +1,12 @@
 #input-form{
 	float: right;
-	width: 50%;
+	margin-top: 50px;
+	margin-right: 100px;
 }
 
 #kiss-source{
+	width: 500px;
 	height:400px;
-	width: 100%;
 }
 
 #process-button{
@@ -22,7 +23,7 @@
 }
 
 #states-container{
-	width: 50%;
+	width: 70%;
 	float: left;
 	height: 100%;
 	overflow: auto;

@@ -1,3 +1,3 @@
 $(function(){
-	kissInput = new KissInput;
+	kissFormat = new KissFormat;
 });
