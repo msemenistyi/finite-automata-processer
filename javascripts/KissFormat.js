@@ -4,7 +4,9 @@ function KissFormat (options) {
 
 	this.canvas = options.canvas || $("canvas");
 
-	this.radius = 60;
+	this.radius = this.canvas.width() / 20;
+
+	this.textSize = this.radius / 10 * 1.5;
 
 	this.source = ko.observable();
 
@@ -58,7 +60,7 @@ KissFormat.prototype.processInput = function() {
 KissFormat.prototype.calcPositions = function() {
 	var self = this;
 
-	var startX = self.canvas.width() / 3;
+	var startX = self.canvas.width() / 2.3;
 	var startY = (self.radius / 2) + 10;
 
 	$.map(self.kissStates(), function(state) {
@@ -101,7 +103,7 @@ KissFormat.prototype.calcPositions = function() {
 					});
 				});
 	
-				startX = self.canvas.width() / 3;
+				startX = self.canvas.width() / 2.3;
 				startY += 2 * self.radius;
 			}
 		} // end if (visibility)
@@ -113,7 +115,7 @@ KissFormat.prototype.drawGraph = function() {
 
 	if (self.kissStates().length == 0) return;
 
-	var canvasHeight = self.kissStates().length * (self.radius * 2) * 0.9;
+	var canvasHeight = self.kissStates().length * (self.radius * 2) * 0.7;
 
 	self.canvas.attr({height: canvasHeight});
 
@@ -140,7 +142,7 @@ KissFormat.prototype.drawCircles = function() {
 			y: state.y
 		});
 		self.canvas.drawText({
-			font: "11pt Verdana, sans-serif",
+			font: self.textSize + "pt Verdana, sans-serif",
 			fillStyle: "#000",
 			x: state.x,
 			y: state.y,
@@ -153,7 +155,7 @@ KissFormat.prototype.drawArrows = function() {
 	var self = this;
 
 	$.map(self.kissStates(), function(start, j) {
-		// if (j != 14) return;
+		// if (j != 0) return;
 		var list =
 		$.map(start.products(), function(product) {
 			return $.map(self.kissStates(), function(el) {
@@ -168,7 +170,7 @@ KissFormat.prototype.drawArrows = function() {
 		var zn = 1;
 
 		$.map(list, function(end, i) {
-			// if (i != 6) return;
+			// if (i != 0) return;
 			var dests = $.map(start.products(), function(el) { if (el.destination == end.name) return true;})
 			var startX = start.x;
 			var startY = start.y;
@@ -179,13 +181,13 @@ KissFormat.prototype.drawArrows = function() {
 			var ctrlX = (startX + endX) / 2;
 			var ctrlY = (startY + endY) / 2;
 
-			var distY = Math.abs(startY - endY) / self.radius / 1.2;
+			var distY = Math.abs(startY - endY) / self.radius / 1.4;
 
-			console.log("Repeat: " + dests);
-			console.log("Distance Y: " + distY);
+			// console.log("Repeat: " + dests);
+			// console.log("Distance Y: " + distY);
 
-			console.log("startY: " + startY + " endY: " + endY);
-			console.log("startX: " + startX + " endX: " + endX);
+			// console.log("startY: " + startY + " endY: " + endY);
+			// console.log("startX: " + startX + " endX: " + endX);
 
 			if (dests.length > 1) zn *= -1;
 
@@ -205,9 +207,9 @@ KissFormat.prototype.drawArrows = function() {
 				}
 				else if (startX < endX) {
 					if (distY > 2) {
-						startX -= (self.radius / 2);
-						endX -= (self.radius / 2);
-						ctrlX -= self.radius * distY;
+						startX -= self.radius / 2 * zn;
+						endX -= self.radius / 2 * zn;
+						ctrlX -= self.radius * distY * zn;
 					}
 					else {
 						startX += self.radius / 2;
@@ -221,21 +223,21 @@ KissFormat.prototype.drawArrows = function() {
 
 					}
 					else {
-						startY += (self.radius / 2);
-						endY -= (self.radius / 2);
+						startY += self.radius / 2;
+						endY -= self.radius / 2;
 					}
 				}
 			}
 			else if (startY > endY) {
 				if (startX > endX) {
 					if (distY > 2) {
-						startX += (self.radius / 2);
-						endX += (self.radius / 2);
-						ctrlX += self.radius * distY;
+						startX -= self.radius / 2 * zn;
+						endX -= self.radius / 2 * zn;
+						ctrlX -= self.radius * distY * zn;
 					}
 					else {
-						startX -= (self.radius / 2);
-						endY += (self.radius / 2);
+						startX -= self.radius / 2;
+						endY += self.radius / 2;
 						ctrlX -= self.radius;
 						ctrlY += self.radius / 2;
 					}
@@ -268,8 +270,8 @@ KissFormat.prototype.drawArrows = function() {
 			else {
 				if (startX < endX) {
 					if (distY > 2) {
-						startY += (self.radius / 2) * zn;
-						endY += (self.radius / 2) * zn;
+						startY += self.radius / 2 * zn;
+						endY += self.radius / 2 * zn;
 
 						if (zn > 0) ctrlY += self.radius * distY * 0.2;
 						else ctrlY -= self.radius * distY * 0.2;
@@ -281,19 +283,22 @@ KissFormat.prototype.drawArrows = function() {
 				}
 				else if (startX > endX) {
 					if (distY > 2) {
-						startY += (self.radius / 2) * zn;
-						endY += (self.radius / 2) * zn;
+						startY += self.radius / 2 * zn;
+						endY += self.radius / 2 * zn;
 
 						if (zn > 0) ctrlY += self.radius * distY * 0.2;
 						else ctrlY -= self.radius * distY * 0.2;
 					}
 					else {
-						startX -= (self.radius / 2);
-						endX += (self.radius / 2);
+						startX -= self.radius / 2;
+						endX += self.radius / 2;
 					}
 				}
 				else {
-
+					startX -= self.radius / 2;
+					endY += self.radius / 2;
+					ctrlX -= self.radius;
+					ctrlY += self.radius;
 				}
 			}
 
