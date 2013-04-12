@@ -1,18 +1,24 @@
-#input-form{
+#input-form {
 	width: 22%;
 	position: fixed;
 	top: 1;
 	right: 1;
+	opacity: 0.3;
 }
 
-#kiss-source{
+#input-form:hover {
+	opacity: 1.0;
+}
+
+#kiss-source {
 	height: 400px;
 	width: 100%;
 }
 
-#process-button{
+#process-button {
 	width: 70px;
 	height: 30px;
+	float: right;
 	border-radius: 5px;
 	background: gray;
 	color: white;
@@ -23,9 +29,9 @@
 	padding-top: 5px;
 }
 
-#states-container{
+/*#states-container {
 	width: 50%;
 	float: left;
 	height: 100%;
 	overflow: auto;
-}
+}*/

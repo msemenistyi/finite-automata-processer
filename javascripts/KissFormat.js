@@ -1,12 +1,14 @@
 function KissFormat (options) {
 
-	this.container = options.container || $("#input-form");
-
 	this.canvas = options.canvas || $("canvas");
 
-	this.radius = this.canvas.width() / 20;
+	this.radius = this.canvas.width() / 24;
 
-	this.textSize = this.radius / 10 * 1.5;
+	this.textSize = this.radius / 10 * 1.8;
+
+	////////////////////////////////////////////
+
+	this.container = options.container || $("#input-form");
 
 	this.source = ko.observable();
 
@@ -57,10 +59,22 @@ KissFormat.prototype.processInput = function() {
 	this.drawGraph();
 };
 
+KissFormat.prototype.getRandInt = function (min, max) {
+	return Math.floor(Math.random(min, max) * (max-min) + min);
+}
+
+KissFormat.prototype.rgb2hex = function (rgb){
+	rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+ 	return (rgb && rgb.length === 4) ? "#" +
+  		("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
+  		("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
+  		("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
+}
+
 KissFormat.prototype.calcPositions = function() {
 	var self = this;
 
-	var startX = self.canvas.width() / 2.3;
+	var startX = self.canvas.width() / 2.2;
 	var startY = (self.radius / 2) + 10;
 
 	$.map(self.kissStates(), function(state) {
@@ -70,6 +84,8 @@ KissFormat.prototype.calcPositions = function() {
 			state.y = startY;
 			state.r = self.radius;
 			state.visible = true;
+			var rgba = "rgba(" + self.getRandInt(0, 245) + ", " + self.getRandInt(0, 245) + ", " + self.getRandInt(0, 245) + " ," + 1 + ")";
+			state.color = self.rgb2hex(rgba);
 	
 			var unqueProducts = [];
 			$.map(state.products(), function(el, i) {
@@ -85,11 +101,12 @@ KissFormat.prototype.calcPositions = function() {
 			});
 
 			var childNum = unqueProducts.length;
+
+			startY += 2 * self.radius;
 	
 			if (childNum > 0)
 			{
-				startX -= (self.radius + 10) * (childNum - 1);
-				startY += 2 * self.radius;
+				startX -= (self.radius + self.radius / 2) * (childNum - 1);
 	
 				$.map(unqueProducts, function(productName) {
 					$.map(self.kissStates(), function(el) {
@@ -98,12 +115,14 @@ KissFormat.prototype.calcPositions = function() {
 							el.y = startY;
 							el.r = self.radius;
 							el.visible = true;
-							startX += 2 * (self.radius + 10);
+							rgba = "rgba(" + self.getRandInt(0, 245) + ", " + self.getRandInt(0, 245) + ", " + self.getRandInt(0, 245) + " ," + 1 + ")";
+							el.color = self.rgb2hex(rgba);
+							startX += 2 * (self.radius + self.radius / 2);
 						}
 					});
 				});
 	
-				startX = self.canvas.width() / 2.3;
+				startX = self.canvas.width() / 2.2;
 				startY += 2 * self.radius;
 			}
 		} // end if (visibility)
@@ -115,7 +134,7 @@ KissFormat.prototype.drawGraph = function() {
 
 	if (self.kissStates().length == 0) return;
 
-	var canvasHeight = self.kissStates().length * (self.radius * 2) * 0.7;
+	var canvasHeight = self.kissStates().length * (self.radius * 2);
 
 	self.canvas.attr({height: canvasHeight});
 
@@ -133,9 +152,9 @@ KissFormat.prototype.drawCircles = function() {
 
 	$.map(self.kissStates(), function(state) {
 		self.canvas.drawEllipse({
-			strokeStyle: "#36C",
+			strokeStyle: state.color,
 			strokeWidth: 2,
-			fillStyle: "#3EC",
+			fillStyle: "#FFF",
 			width: state.r,
 			height: state.r,
 			x: state.x,
@@ -143,7 +162,7 @@ KissFormat.prototype.drawCircles = function() {
 		});
 		self.canvas.drawText({
 			font: self.textSize + "pt Verdana, sans-serif",
-			fillStyle: "#000",
+			fillStyle: state.color,
 			x: state.x,
 			y: state.y,
 			text: state.name
@@ -165,7 +184,7 @@ KissFormat.prototype.drawArrows = function() {
 			});
 		});
 
-		// console.log(list);
+		console.log(start);
 
 		var zn = 1;
 
@@ -181,13 +200,7 @@ KissFormat.prototype.drawArrows = function() {
 			var ctrlX = (startX + endX) / 2;
 			var ctrlY = (startY + endY) / 2;
 
-			var distY = Math.abs(startY - endY) / self.radius / 1.4;
-
-			// console.log("Repeat: " + dests);
-			// console.log("Distance Y: " + distY);
-
-			// console.log("startY: " + startY + " endY: " + endY);
-			// console.log("startX: " + startX + " endX: " + endX);
+			var distY = Math.abs(startY - endY) / self.radius / 1.32;
 
 			if (dests.length > 1) zn *= -1;
 
@@ -220,7 +233,9 @@ KissFormat.prototype.drawArrows = function() {
 				}
 				else {
 					if (distY > 2) {
-
+						startX -= self.radius / 2 * zn;
+						endX -= self.radius / 2 * zn;
+						ctrlX -= self.radius * distY * zn;
 					}
 					else {
 						startY += self.radius / 2;
@@ -257,9 +272,9 @@ KissFormat.prototype.drawArrows = function() {
 				}
 				else {
 					if (distY > 2) {
-						startX -= self.radius / 2;
-						endX -= self.radius / 2;
-						ctrlX -= self.radius * distY;
+						startX -= self.radius / 2 * zn;
+						endX -= self.radius / 2 * zn;
+						ctrlX -= self.radius * distY * zn;
 					}
 					else {
 						startY -= self.radius / 2;
@@ -305,6 +320,8 @@ KissFormat.prototype.drawArrows = function() {
 			self.canvas.drawQuad({
 				strokeStyle: "#36C",
 				strokeWidth: 2,
+				strokeStyle: start.color,
+				opacity: 0.9,
 				x1: startX, y1: startY, // Start point
 				cx1: ctrlX, cy1: ctrlY, // Control point
 				x2: endX, y2: endY // End point
