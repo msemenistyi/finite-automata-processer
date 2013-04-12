@@ -2,19 +2,24 @@ function KissState (options) {
 
 	this.name = options.name;
 
+	this.x = 0;
+	this.y = 0;
+	this.r = 0;
+
+	this.visible = false;
+
 	this.products = ko.observableArray([]);
 
 	for (var i = 0; i < options.products.length; i++)
 		this.products.push(this.parseToObject(options.products[i]));
 
-	this.container = $("<div />");
+	//this.container = $("<div />");
 
-	this.container.attr({"data-bind": "template: 'kiss-state-template'"});
+	//this.container.attr({"data-bind": "template: 'kiss-state-template'"});
 
-	this.container.appendTo($("#states-container"));
+	//this.container.appendTo($("#states-container"));
 
-	ko.applyBindings(this, this.container[0]);
-
+	//ko.applyBindings(this, this.container[0]);
 }
 
 KissState.prototype.parseToObject = function(state) {

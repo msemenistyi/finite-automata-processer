@@ -1,6 +1,8 @@
-function KissFormat () {
+function KissFormat (options) {
 
 	this.container = $("#input-form");
+
+	this.canvas = options.canvas || $("canvas");
 
 	this.source = ko.observable();
 
@@ -9,12 +11,10 @@ function KissFormat () {
 	this.kissStates = ko.observableArray([]);
 
 	ko.applyBindings(this, this.container[0]);
-
 }
 
 KissFormat.prototype.processInput = function() {
-
-	$("#states-container").html("");
+	// $("#states-container").html("");
 	this.currentRow = 0;
 	this.rows = this.source().split("\n");
 	this.i = this.lookForNumber({header: ".i"});
@@ -50,10 +50,90 @@ KissFormat.prototype.processInput = function() {
 		statesArray.splice(i,1);
 		this.kissStates.push(new KissState(options));
 	}
+
+	this.drawGraph();
+};
+
+KissFormat.prototype.calcPositions = function() {
+	var radius = 60;
+
+	var startX = this.canvas.width() / 2;
+	var startY = (radius / 2) + 10;
+
+	this.kissStates()[0].x = startX;
+	this.kissStates()[0].y = startY;
+	this.kissStates()[0].r = radius;
+
+
+	for (var i = 0; i < this.kissStates().length; i++) {
+		if (this.kissStates()[i].visible == true) continue;
+
+		this.kissStates()[i].x = startX;
+		this.kissStates()[i].y = startY;
+		this.kissStates()[i].r = radius;
+
+		this.kissStates()[i].visible = true;
+
+		var childNum = this.kissStates()[i].products().length;
+
+		if (childNum > 0)
+		{
+			startX -= (radius + 10) * childNum / 2;
+			startY += 2 * radius;
+
+			for (var k = 0; k < childNum; k++)
+			{
+				var nextName = this.kissStates()[i].products()[k].destination;
+
+				for (var j = 0; j < this.kissStates().length; j++) {
+					if (this.kissStates()[j].name == nextName && !this.kissStates()[j].visible) {
+						this.kissStates()[j].x = startX;
+						this.kissStates()[j].y = startY;
+						this.kissStates()[j].r = radius;
+						this.kissStates()[j].visible = true;
+						startX += (k+2) * (radius + 10);
+						break;
+					}
+				}
+			}
+
+			startX = this.canvas.width() / 2;
+			startY += 2 * radius;
+		}
+	};
+};
+
+KissFormat.prototype.drawGraph = function() {
+	if (this.kissStates().length == 0) return;
+
+	this.calcPositions();
+
+	for (var i = this.kissStates().length - 1; i >= 0; i--) {
+		// ------
+		this.canvas.drawEllipse({
+			strokeStyle: "#36c",
+			scale: 1,
+			strokeWidth: 2,
+			fillStyle: "#3ec",
+			width: this.kissStates()[i].r,
+			height: this.kissStates()[i].r,
+			x: this.kissStates()[i].x,
+			y: this.kissStates()[i].y
+		});
+		// ------
+		this.canvas.drawText({
+			font: "11pt Verdana, sans-serif",
+			fillStyle: "#000",
+			x: this.kissStates()[i].x,
+			y: this.kissStates()[i].y,
+			text: this.kissStates()[i].name
+		});
+	};
+
+	
 };
 
 KissFormat.prototype.lookForNumber = function(options) {
-
 	var rowToStart = options.rowToStart || this.rowToStart; 
 	var pattern    = new RegExp("(" + options.header + " (\\d*))", "g")
 
@@ -70,5 +150,4 @@ KissFormat.prototype.lookForNumber = function(options) {
 		}
 		this.currentRow++;
 	}
-
 };

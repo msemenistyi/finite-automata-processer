@@ -4,11 +4,13 @@
 	<link rel="stylesheet" type="text/css" href="style/style.css">
 	<script type="text/javascript" src="javascripts/libraries/jquery-1.8.2.min.js"></script>
 	<script type="text/javascript" src="javascripts/libraries/knockout-2.2.0.js"></script>
-	<script type="text/javascript" src="javascripts/KissFormat.js"></script>
+	<script type="text/javascript" src="javascripts/libraries/jcanvas.min.js"></script>
 	<script type="text/javascript" src="javascripts/KissState.js"></script>
+	<script type="text/javascript" src="javascripts/KissFormat.js"></script>
 	<script type="text/javascript" src="javascripts/app.js"></script>
 </head>
 <body>
+	<!--
 	<script type="text/html" id="kiss-state-template">
 		<h2 data-bind="text: name"></h2>
 		<ol data-bind="foreach: products">
@@ -19,7 +21,11 @@
 			</li>
 		</ol>
 	</script>
-	<div id="states-container"></div>
+	-->
+	<!-- <div id="states-container"></div> -->
+	<canvas id="canvas">
+		<a href="http://whatbrowser.org/">Обновите свой браузер</a>
+	</canvas>
 	<div id="input-form">
 		<textarea id="kiss-source" data-bind="value: source" >
 		</textarea>
