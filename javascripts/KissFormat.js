@@ -8,8 +8,6 @@ function KissFormat (options) {
 
 	this.currentRow = 0;
 
-	this.kissStates = ko.observableArray([]);
-
 	ko.applyBindings(this, this.container[0]);
 }
 
@@ -21,6 +19,8 @@ KissFormat.prototype.processInput = function() {
 	this.o = this.lookForNumber({header: ".o", rowToStart: this.currentRow});
 	this.p = this.lookForNumber({header: ".p", rowToStart: this.currentRow});
 	this.s = this.lookForNumber({header: ".s", rowToStart: this.currentRow});
+
+	this.kissStates = ko.observableArray([]);
 
 	this.currentRow++;
 	this.inputStates = [];
@@ -55,6 +55,8 @@ KissFormat.prototype.processInput = function() {
 };
 
 KissFormat.prototype.calcPositions = function() {
+	var self = this;
+
 	var radius = 60;
 
 	var startX = this.canvas.width() / 2;
@@ -67,23 +69,42 @@ KissFormat.prototype.calcPositions = function() {
 
 	for (var i = 0; i < this.kissStates().length; i++) {
 		if (this.kissStates()[i].visible == true) continue;
-
 		this.kissStates()[i].x = startX;
 		this.kissStates()[i].y = startY;
 		this.kissStates()[i].r = radius;
 
 		this.kissStates()[i].visible = true;
 
-		var childNum = this.kissStates()[i].products().length;
+		// console.log(this.kissStates()[i].name);
+		// console.log(this.kissStates()[i].products());
+
+		var allProducts = [];
+		$.each(self.kissStates()[i].products(), function(j, el) {
+			allProducts.push(el.destination);
+		});
+
+		console.log("Для: " + self.kissStates()[i].name);
+		console.log("До: ");
+		console.log(allProducts);
+
+		var unqueProducts = [];
+		$.each(allProducts, function(j, el){
+    		if($.inArray(el, unqueProducts) === -1 && el != self.kissStates()[i].name) unqueProducts.push(el);
+		});
+
+		console.log("После: ");
+		console.log(unqueProducts);
+
+		var childNum = unqueProducts.length;
 
 		if (childNum > 0)
 		{
-			startX -= (radius + 10) * childNum / 2;
+			startX -= (radius + 10) * (childNum - 1);
 			startY += 2 * radius;
 
 			for (var k = 0; k < childNum; k++)
 			{
-				var nextName = this.kissStates()[i].products()[k].destination;
+				var nextName = unqueProducts[k];
 
 				for (var j = 0; j < this.kissStates().length; j++) {
 					if (this.kissStates()[j].name == nextName && !this.kissStates()[j].visible) {
@@ -91,7 +112,7 @@ KissFormat.prototype.calcPositions = function() {
 						this.kissStates()[j].y = startY;
 						this.kissStates()[j].r = radius;
 						this.kissStates()[j].visible = true;
-						startX += (k+2) * (radius + 10);
+						startX += 2 * (radius + 10);
 						break;
 					}
 				}
@@ -105,6 +126,8 @@ KissFormat.prototype.calcPositions = function() {
 
 KissFormat.prototype.drawGraph = function() {
 	if (this.kissStates().length == 0) return;
+
+	this.canvas.clearCanvas();
 
 	this.calcPositions();
 
@@ -130,7 +153,7 @@ KissFormat.prototype.drawGraph = function() {
 		});
 	};
 
-	
+
 };
 
 KissFormat.prototype.lookForNumber = function(options) {
