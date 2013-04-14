@@ -2,13 +2,20 @@ function KissFormat (options) {
 
 	this.container = options.container || $("#input-form");
 
-	this.source = ko.observable();
+	this.source  = ko.observable();
+	this.enableX = ko.observable(false);
+	this.enableY = ko.observable(false);
 
 	this.currentRow = 0;
 
 	ko.applyBindings(this, this.container[0]);
 
 	this.mediator = options.mediator;
+	this.rendered = false;
+	var self = this;
+	this.mediator.once("app:render", function(){
+		self.rendered = true;
+	})
 }
 
 KissFormat.prototype.processInput = function() {
@@ -50,7 +57,7 @@ KissFormat.prototype.processInput = function() {
 		this.kissStates.push(new KissState(options));
 	}
 
-	this.mediator.publish("app:render", this.kissStates())
+	this.mediator.publish("app:render", {states: this.kissStates(), x_enabled: this.enableX(), y_enabled: this.enableY()})
 };
 
 KissFormat.prototype.lookForNumber = function(options) {
@@ -70,4 +77,12 @@ KissFormat.prototype.lookForNumber = function(options) {
 		}
 		this.currentRow++;
 	}
+};
+
+KissFormat.prototype.render = function() {
+
+	if (this.rendered){
+		this.mediator.publish("app:render", {states: this.kissStates(), x_enabled: this.enableX(), y_enabled: this.enableY()})
+	}
+	return true;
 };

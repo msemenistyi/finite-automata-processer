@@ -20,6 +20,10 @@
 		<textarea id="kiss-source" data-bind="value: source" >
 		</textarea>
 		<div id="process-button" data-bind="click: processInput">Process</div>
+		<input type="checkbox" id="enable-x" data-bind="checked:enableX, event: {click: render}" />
+		<label for="enable-x">Render IN(x) labels</label><br>
+		<input type="checkbox" id="enable-y" data-bind="checked:enableY, event: {click: render}"/>
+		<label for="enable-y">Render OUT(y) labels</label>
 	</div>
 </body>
 </html>

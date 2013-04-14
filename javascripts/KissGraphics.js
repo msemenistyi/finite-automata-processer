@@ -12,17 +12,20 @@ function KissGraphics(options){
 	
 	var self = this;
 	this.mediator.subscribe("app:render", function(data){
-		self.drawGraph(data);
+		self.states = data.states;
+		self.renderX = data.x_enabled;
+		self.renderY = data.y_enabled;
+		self.drawGraph();
 	});
 }
 
-KissGraphics.prototype.calcPositions = function(data) {
+KissGraphics.prototype.calcPositions = function() {
 	var self = this;
 
 	var startX = self.canvas.width() / 2.2;
 	var startY = 3 * self.radius / 2;
 
-	$.map(data, function(state) {
+	$.map(self.states, function(state) {
 		if (state.visible == false) {
 
 			state.x = startX;
@@ -36,7 +39,7 @@ KissGraphics.prototype.calcPositions = function(data) {
 			$.map(state.products(), function(el, i) {
 	    		if($.inArray(el.destination, unqueProducts) === -1 && el.destination != state.name) {
 	    			var canPush =
-	    			$.map(data, function(st) {
+	    			$.map(self.states, function(st) {
 	    				if (st.name === el.destination) {
 	    					return !st.visible;
 	    				}
@@ -54,7 +57,7 @@ KissGraphics.prototype.calcPositions = function(data) {
 				startX -= (3*self.radius) * (childNum - 1);
 	
 				$.map(unqueProducts, function(productName) {
-					$.map(data, function(el) {
+					$.map(self.states, function(el) {
 						if (el.name == productName && !el.visible) {
 							el.x = startX;
 							el.y = startY;
@@ -74,27 +77,25 @@ KissGraphics.prototype.calcPositions = function(data) {
 	});
 }
 
-KissGraphics.prototype.drawGraph = function(data) {
+KissGraphics.prototype.drawGraph = function() {
 
-	if (data.length == 0) return;
+	if (this.states.length == 0) return;
 
-	var canvasHeight = data.length * (3 * this.radius);
-
+	var canvasHeight = this.states.length * (3 * this.radius);
 	this.canvas.attr({height: canvasHeight});
-
 	this.canvas.clearCanvas();
 
-	this.calcPositions(data);
+	this.calcPositions();
 
-	this.drawCircles(data);
+	this.drawCircles();
 
-	this.drawArrows(data);
+	this.drawArrows();
 }
 
-KissGraphics.prototype.drawCircles = function(data) {
+KissGraphics.prototype.drawCircles = function() {
 	var self = this;
 
-	$.map(data, function(state) {
+	$.map(self.states, function(state) {
 		self.canvas.drawEllipse({
 			strokeStyle: state.color,
 			strokeWidth: 2,
@@ -114,11 +115,11 @@ KissGraphics.prototype.drawCircles = function(data) {
 	});
 };
 
-KissGraphics.prototype.drawArrows = function(data) {
+KissGraphics.prototype.drawArrows = function() {
 	var self = this;
 
 	// Перебираем все состояния
-	$.map(data, function(start, i) {
+	$.map(self.states, function(start, i) {
 		// if ( i != 6 ) return;
 		// Поскольку в поле переходов хранится лишь название следующей вершины,
 		// а для прорисовки линий необходимы координаты, то необходимо получить
@@ -126,7 +127,7 @@ KissGraphics.prototype.drawArrows = function(data) {
 		// проводится линии от текущей вершины
 		var list =
 		$.map(start.products(), function(product) {
-			return $.map(data, function(el) {
+			return $.map(self.states, function(el) {
 				if (product.destination === el.name) {
 					return el;
 				}
@@ -463,29 +464,46 @@ KissGraphics.prototype.drawArrows = function(data) {
 				x2: endX, y2: endY 		// Конечная точка
 			});
 
-			// Выводим содержимое поля x_string
-			self.canvas.drawText({
-				fillStyle: start.color,
-				strokeWidth: 1,
-				x: txtX_x,
-				y: txtY_x,
-				font: "6pt",
-				fromCenter: true,
+			var options = {
+				X_x: txtX_x,
+				Y_x: txtY_x,
+				X_y: txtX_y,
+				Y_y: txtY_y,
 				rotate: txtRotate,
-				text: start.products()[j].x_string
-			});
-
-			// Выводим содержимое поля y_string
-			self.canvas.drawText({
-				fillStyle: start.color,
-				strokeWidth: 1,
-				x: txtX_y,
-				y: txtY_y,
-				font: "6pt",
-				fromCenter: true,
-				rotate: txtRotate,
-				text: start.products()[j].y_string
-			});
+				color: start.color,
+				x_string: start.products()[j].x_string,
+				y_string: start.products()[j].y_string
+			};
+			self.renderLabels(options)
 		});
 	});
+};
+
+KissGraphics.prototype.renderLabels = function(options) {
+	if (this.renderX){
+		// Выводим содержимое поля x_string
+		this.canvas.drawText({
+			fillStyle: options.color,
+			strokeWidth: 1,
+			x: options.X_x,
+			y: options.Y_x,
+			font: "6pt",
+			fromCenter: true,
+			rotate: options.rotate,
+			text: options.x_string
+		});
+	}
+	if (this.renderY){
+		// Выводим содержимое поля y_string
+		this.canvas.drawText({
+			fillStyle: options.color,
+			strokeWidth: 1,
+			x: options.X_y,
+			y: options.Y_y,
+			font: "6pt",
+			fromCenter: true,
+			rotate: options.rotate,
+			text: options.y_string
+		});
+	}
 };
