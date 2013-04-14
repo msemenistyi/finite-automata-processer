@@ -8,13 +8,13 @@ function KissFormat (options) {
 
 	this.currentRow = 0;
 
+	this.rendered = ko.observable(false);
 	ko.applyBindings(this, this.container[0]);
 
 	this.mediator = options.mediator;
-	this.rendered = false;
 	var self = this;
 	this.mediator.once("app:render", function(){
-		self.rendered = true;
+		self.rendered(true);
 	})
 }
 
@@ -81,8 +81,16 @@ KissFormat.prototype.lookForNumber = function(options) {
 
 KissFormat.prototype.render = function() {
 
-	if (this.rendered){
+	if (this.rendered()){
 		this.mediator.publish("app:render", {states: this.kissStates(), x_enabled: this.enableX(), y_enabled: this.enableY()})
 	}
 	return true;
+};
+
+KissFormat.prototype.save = function() {
+
+	if (this.rendered()){
+		this.mediator.publish("app:save");
+	}
+
 };

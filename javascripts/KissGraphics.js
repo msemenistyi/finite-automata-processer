@@ -17,6 +17,10 @@ function KissGraphics(options){
 		self.renderY = data.y_enabled;
 		self.drawGraph();
 	});
+
+	this.mediator.subscribe("app:save",function(){
+		self.save();
+	});
 }
 
 KissGraphics.prototype.calcPositions = function() {
@@ -506,4 +510,11 @@ KissGraphics.prototype.renderLabels = function(options) {
 			text: options.y_string
 		});
 	}
+};
+
+KissGraphics.prototype.save = function() {
+	var c = this.canvas[0];
+	var d = c.toDataURL("image/png");
+	var w = window.open('about:blank','image from canvas');
+	w.document.write("<img src='" + d + "' alt='from canvas'/>");
 };

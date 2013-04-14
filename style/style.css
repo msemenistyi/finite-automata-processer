@@ -15,7 +15,7 @@
 	width: 100%;
 }
 
-#process-button {
+#process-button,#save-button {
 	width: 70px;
 	height: 30px;
 	float: right;
@@ -28,10 +28,3 @@
 	cursor: pointer;
 	padding-top: 5px;
 }
-
-/*#states-container {
-	width: 50%;
-	float: left;
-	height: 100%;
-	overflow: auto;
-}*/
