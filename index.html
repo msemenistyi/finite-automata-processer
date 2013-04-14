@@ -17,14 +17,18 @@
 		<a href="http://whatbrowser.org/">Обновите свой браузер</a>
 	</canvas>
 	<div id="input-form">
-		<textarea id="kiss-source" data-bind="value: source" >
+		<textarea id="kiss-source" data-bind="value: source, valueUpdate: 'afterkeydown', event: {keydown: sourceKeydown}" >
 		</textarea>
-		<div id="process-button" data-bind="click: processInput">Process</div>
-		<div id="save-button" data-bind="visible: rendered, click: save">Save</div>
+		<div id="process-button" data-bind="click: processInput" title="CTRL + ENTER">Process</div>
+		<div id="save-button" data-bind="visible: rendered, click: save" title="CTRL + SHIFT + S">Save</div>
 		<input type="checkbox" id="enable-x" data-bind="checked:enableX, event: {click: render}" />
 		<label for="enable-x">Render IN(x)</label><br>
 		<input type="checkbox" id="enable-y" data-bind="checked:enableY, event: {click: render}"/>
 		<label for="enable-y">Render OUT(y)</label>
+	</div>
+	<div id="hint-container">
+		<div id=""><div class="combination">Ctrl+Enter to render graphics</div></div>
+		<div id=""><div class="combination">Ctrl+Shift+S to convert it to image</div></div>
 	</div>
 </body>
 </html>

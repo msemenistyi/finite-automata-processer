@@ -28,3 +28,21 @@
 	cursor: pointer;
 	padding-top: 5px;
 }
+
+#hint-container{
+	opacity: 0.2;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	border: 1px gray solid;
+	border-radius: 8px;
+	cursor: default;
+}
+
+.combination{
+	font-weight: bolder;
+}
+
+#hint-container:hover{
+	opacity: 1;
+}

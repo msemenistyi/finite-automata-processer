@@ -80,7 +80,6 @@ KissFormat.prototype.lookForNumber = function(options) {
 };
 
 KissFormat.prototype.render = function() {
-
 	if (this.rendered()){
 		this.mediator.publish("app:render", {states: this.kissStates(), x_enabled: this.enableX(), y_enabled: this.enableY()})
 	}
@@ -88,9 +87,17 @@ KissFormat.prototype.render = function() {
 };
 
 KissFormat.prototype.save = function() {
-
 	if (this.rendered()){
 		this.mediator.publish("app:save");
 	}
+};
 
+KissFormat.prototype.sourceKeydown = function(el, event) {
+	if (event.ctrlKey && event.keyCode == 13) {
+		this.processInput();
+	}	
+	if (event.shiftKey && event.ctrlKey && event.keyCode == 83) {
+		this.save();
+	}
+	return true;
 };
