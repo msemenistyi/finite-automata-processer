@@ -1,17 +1,17 @@
 function KissGraphics(options){
-
-	this.canvas = options.canvas || $("canvas");
-
-	this.radius = this.canvas.width() / 26;
-
-	this.textSize = this.radius / 10 * 1.8;
-
-	this.utils = new Utils;
-
-	this.mediator = options.mediator;
-	
 	var self = this;
-	this.mediator.subscribe("app:render", function(data){
+
+	self.canvas = options.canvas || $("canvas");
+
+	self.radius = this.canvas.width() / 26;
+
+	self.textSize = (this.radius / 10) * 1.6;
+
+	self.utils = new Utils;
+
+	self.mediator = options.mediator;
+	
+	self.mediator.subscribe("app:render", function(data){
 		self.drawGraph(data);
 	});
 }
@@ -23,54 +23,54 @@ KissGraphics.prototype.calcPositions = function(data) {
 	var startY = 3 * self.radius / 2;
 
 	$.map(data, function(state) {
-		if (state.visible == false) {
+		if (state.visible) return;
 
-			state.x = startX;
-			state.y = startY;
-			state.r = self.radius;
-			state.visible = true;
-			var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
-			state.color = self.utils.rgb2hex(rgba);
-	
-			var unqueProducts = [];
-			$.map(state.products(), function(el, i) {
-	    		if($.inArray(el.destination, unqueProducts) === -1 && el.destination != state.name) {
-	    			var canPush =
-	    			$.map(data, function(st) {
-	    				if (st.name === el.destination) {
-	    					return !st.visible;
-	    				}
-	    			})[0];
-	    			if (canPush) unqueProducts.push(el.destination);
-	    		}
-			});
+		state.x = startX;
+		state.y = startY;
+		state.r = self.radius;
+		state.visible = true;
 
-			var childNum = unqueProducts.length;
+		var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
+		state.color = self.utils.rgb2hex(rgba);
+	
+		var unqueProducts = [];
+		$.map(state.products(), function(el, i) {
+    		if($.inArray(el.destination, unqueProducts) === -1 && el.destination != state.name) {
+    			var canPush =
+    			$.map(data, function(st) {
+    				if (st.name === el.destination) {
+    					return !st.visible;
+    				}
+    			})[0];
+    			if (canPush) unqueProducts.push(el.destination);
+    		}
+		});
 
-			startY += 3 * self.radius;
+		var childNum = unqueProducts.length;
+
+		startY += 3 * self.radius;
 	
-			if (childNum > 0)
-			{
-				startX -= (3*self.radius) * (childNum - 1);
+		if (childNum > 0)
+		{
+			startX -= (3*self.radius) * (childNum - 1);
 	
-				$.map(unqueProducts, function(productName) {
-					$.map(data, function(el) {
-						if (el.name == productName && !el.visible) {
-							el.x = startX;
-							el.y = startY;
-							el.r = self.radius;
-							el.visible = true;
-							rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
-							el.color = self.utils.rgb2hex(rgba);
-							startX += 2 * (3*self.radius);
-						}
-					});
+			$.map(unqueProducts, function(productName) {
+				$.map(data, function(el) {
+					if (el.name == productName && !el.visible) {
+						el.x = startX;
+						el.y = startY;
+						el.r = self.radius;
+						el.visible = true;
+						rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
+						el.color = self.utils.rgb2hex(rgba);
+						startX += 2 * (3*self.radius);
+					}
 				});
+			});
 	
-				startX = self.canvas.width() / 2.2;
-				startY += 3 * self.radius;
-			}
-		} // end if (visibility)
+			startX = self.canvas.width() / 2.2;
+			startY += 3 * self.radius;
+		}
 	});
 }
 
@@ -119,7 +119,6 @@ KissGraphics.prototype.drawArrows = function(data) {
 
 	// Перебираем все состояния
 	$.map(data, function(start, i) {
-		// if ( i != 6 ) return;
 		// Поскольку в поле переходов хранится лишь название следующей вершины,
 		// а для прорисовки линий необходимы координаты, то необходимо получить
 		// объекты, в которых и хранятся координаты вершин к которым будут
@@ -137,13 +136,15 @@ KissGraphics.prototype.drawArrows = function(data) {
 
 		// Перебираем все вершины, с которыми связана текущая вершина
 		$.map(list, function(end, j) {
-			// if ( j != 1 ) return;
-
 			// Получаем массив из элементов true.
 			// Если размер полученного массива больше одного,
 			// то значит из текущей вершины можно попасть в следующую
 			// более чем по одному условию
-			var dests = $.map(start.products(), function(el) { if (el.destination == end.name) return true;} );
+			var dests =
+			$.map(start.products(),
+				function(el) {
+					if (el.destination == end.name) return true;
+				});
 
 			var startX = start.x; // Координата X текущей вершины
 			var startY = start.y; // Координата Y текущей вершины
@@ -159,12 +160,6 @@ KissGraphics.prototype.drawArrows = function(data) {
 			var txtX_y = ctrlX; // Координата x для вывода текста y_string
 			var txtY_y = ctrlY; // Координата y для вывода текста y_string
 			var txtRotate = 0;  // Угол поворота текста
-
-			// console.log("startX: " + startX);
-			// console.log("startY: " + startY);
-			// console.log("endX: " + endX);
-			// console.log("endY: " + endY);
-			// console.log(start.products()[j]);
 
 			// Расстояние между элементами в условных еденицах
 			// (по идее это количество пролётов, но с небольшой корректировкой)
