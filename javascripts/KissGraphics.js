@@ -1,14 +1,15 @@
 function KissGraphics(options){
+	var self = this;
 
-	this.canvas = options.canvas || $("canvas");
+	self.canvas = options.canvas || $("canvas");
 
-	this.radius = this.canvas.width() / 26;
+	self.radius = this.canvas.width() / 26;
 
-	this.textSize = this.radius / 10 * 1.8;
+	self.textSize = (this.radius / 10) * 1.6;
 
-	this.utils = new Utils;
+	self.utils = new Utils;
 
-	this.mediator = options.mediator;
+	self.mediator = options.mediator;
 	
 	var self = this;
 	this.mediator.subscribe("app:render", function(data){
@@ -29,37 +30,38 @@ KissGraphics.prototype.calcPositions = function() {
 	var startX = self.canvas.width() / 2.2;
 	var startY = 3 * self.radius / 2;
 
-	$.map(self.states, function(state) {
-		if (state.visible == false) {
+	$.map(this.states, function(state) {
+		if (state.visible) return;
 
-			state.x = startX;
-			state.y = startY;
-			state.r = self.radius;
-			state.visible = true;
-			var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
-			state.color = self.utils.rgb2hex(rgba);
-	
-			var unqueProducts = [];
-			$.map(state.products(), function(el, i) {
-	    		if($.inArray(el.destination, unqueProducts) === -1 && el.destination != state.name) {
-	    			var canPush =
-	    			$.map(self.states, function(st) {
-	    				if (st.name === el.destination) {
-	    					return !st.visible;
-	    				}
-	    			})[0];
-	    			if (canPush) unqueProducts.push(el.destination);
-	    		}
-			});
+		state.x = startX;
+		state.y = startY;
+		state.r = self.radius;
+		state.visible = true;
 
-			var childNum = unqueProducts.length;
+		var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
+		state.color = self.utils.rgb2hex(rgba);
+	
+		var unqueProducts = [];
+		$.map(state.products(), function(el, i) {
+    		if($.inArray(el.destination, unqueProducts) === -1 && el.destination != state.name) {
+    			var canPush =
+    			$.map(self.states, function(st) {
+    				if (st.name === el.destination) {
+    					return !st.visible;
+    				}
+    			})[0];
+    			if (canPush) unqueProducts.push(el.destination);
+    		}
+		});
 
-			startY += 3 * self.radius;
+		var childNum = unqueProducts.length;
+
+		startY += 3 * self.radius;
 	
-			if (childNum > 0)
-			{
-				startX -= (3*self.radius) * (childNum - 1);
-	
+		if (childNum > 0)
+		{
+			startX -= (3*self.radius) * (childNum - 1);
+
 				$.map(unqueProducts, function(productName) {
 					$.map(self.states, function(el) {
 						if (el.name == productName && !el.visible) {
@@ -74,10 +76,9 @@ KissGraphics.prototype.calcPositions = function() {
 					});
 				});
 	
-				startX = self.canvas.width() / 2.2;
-				startY += 3 * self.radius;
-			}
-		} // end if (visibility)
+			startX = self.canvas.width() / 2.2;
+			startY += 3 * self.radius;
+		}
 	});
 }
 
@@ -142,13 +143,15 @@ KissGraphics.prototype.drawArrows = function() {
 
 		// Перебираем все вершины, с которыми связана текущая вершина
 		$.map(list, function(end, j) {
-			// if ( j != 1 ) return;
-
 			// Получаем массив из элементов true.
 			// Если размер полученного массива больше одного,
 			// то значит из текущей вершины можно попасть в следующую
 			// более чем по одному условию
-			var dests = $.map(start.products(), function(el) { if (el.destination == end.name) return true;} );
+			var dests =
+			$.map(start.products(),
+				function(el) {
+					if (el.destination == end.name) return true;
+				});
 
 			var startX = start.x; // Координата X текущей вершины
 			var startY = start.y; // Координата Y текущей вершины
@@ -164,12 +167,6 @@ KissGraphics.prototype.drawArrows = function() {
 			var txtX_y = ctrlX; // Координата x для вывода текста y_string
 			var txtY_y = ctrlY; // Координата y для вывода текста y_string
 			var txtRotate = 0;  // Угол поворота текста
-
-			// console.log("startX: " + startX);
-			// console.log("startY: " + startY);
-			// console.log("endX: " + endX);
-			// console.log("endY: " + endY);
-			// console.log(start.products()[j]);
 
 			// Расстояние между элементами в условных еденицах
 			// (по идее это количество пролётов, но с небольшой корректировкой)
