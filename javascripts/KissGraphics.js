@@ -1,4 +1,4 @@
-function KissGraphics(options){
+function KissGraphics(options) {
 	var self = this;
 
 	self.canvas = options.canvas || $("canvas");
@@ -11,15 +11,14 @@ function KissGraphics(options){
 
 	self.mediator = options.mediator;
 	
-	var self = this;
-	this.mediator.subscribe("app:render", function(data){
+	self.mediator.subscribe("app:render", function(data) {
 		self.states = data.states;
 		self.renderX = data.x_enabled;
 		self.renderY = data.y_enabled;
 		self.drawGraph();
 	});
 
-	this.mediator.subscribe("app:save",function(){
+	self.mediator.subscribe("app:save", function() {
 		self.save();
 	});
 }
@@ -38,7 +37,9 @@ KissGraphics.prototype.calcPositions = function() {
 		state.r = self.radius;
 		state.visible = true;
 
-		var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
+		var rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", "
+			+ self.utils.getRandInt(0, 245) + ", "
+			+ self.utils.getRandInt(0, 245) + ", " + 1 + ")";
 		state.color = self.utils.rgb2hex(rgba);
 	
 		var unqueProducts = [];
@@ -69,7 +70,9 @@ KissGraphics.prototype.calcPositions = function() {
 							el.y = startY;
 							el.r = self.radius;
 							el.visible = true;
-							rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + ", " + self.utils.getRandInt(0, 245) + " ," + 1 + ")";
+							rgba = "rgba(" + self.utils.getRandInt(0, 245) + ", "
+								+ self.utils.getRandInt(0, 245) + ", "
+								+ self.utils.getRandInt(0, 245) + ", " + 1 + ")";
 							el.color = self.utils.rgb2hex(rgba);
 							startX += 2 * (3*self.radius);
 						}
@@ -83,11 +86,12 @@ KissGraphics.prototype.calcPositions = function() {
 }
 
 KissGraphics.prototype.drawGraph = function() {
-
 	if (this.states.length == 0) return;
 
 	var canvasHeight = this.states.length * (3 * this.radius);
+
 	this.canvas.attr({height: canvasHeight});
+
 	this.canvas.clearCanvas();
 
 	this.calcPositions();
@@ -125,7 +129,6 @@ KissGraphics.prototype.drawArrows = function() {
 
 	// Перебираем все состояния
 	$.map(self.states, function(start, i) {
-		// if ( i != 6 ) return;
 		// Поскольку в поле переходов хранится лишь название следующей вершины,
 		// а для прорисовки линий необходимы координаты, то необходимо получить
 		// объекты, в которых и хранятся координаты вершин к которым будут
