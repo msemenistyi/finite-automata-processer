@@ -1,10 +1,12 @@
-function KissGraphics(options) {
+function CanvasRenderer(options) {
 	var self = this;
+
+	self.canvas = options.canvas;
 
 	self.utils = new Utils;
 }
 
-KissGraphics.prototype.calcPositions = function() {
+CanvasRenderer.prototype.calcPositions = function() {
 	var self = this;
 
 	var startX = self.canvas.width() / 2.2;
@@ -66,7 +68,7 @@ KissGraphics.prototype.calcPositions = function() {
 	});
 }
 
-KissGraphics.prototype.drawGraph = function() {
+CanvasRenderer.prototype.drawGraph = function() {
 	if (this.states.length == 0) return;
 
 	this.calcPositions();
@@ -76,7 +78,7 @@ KissGraphics.prototype.drawGraph = function() {
 	this.drawArrows();
 }
 
-KissGraphics.prototype.drawCircles = function() {
+CanvasRenderer.prototype.drawCircles = function() {
 	var self = this;
 
 	$.map(self.states, function(state) {
@@ -99,7 +101,7 @@ KissGraphics.prototype.drawCircles = function() {
 	});
 };
 
-KissGraphics.prototype.drawArrows = function() {
+CanvasRenderer.prototype.drawArrows = function() {
 	var self = this;
 
 	// Перебираем все состояния
@@ -458,7 +460,7 @@ KissGraphics.prototype.drawArrows = function() {
 	});
 };
 
-KissGraphics.prototype.renderLabels = function(options) {
+CanvasRenderer.prototype.renderLabels = function(options) {
 	if (this.renderX){
 		// Выводим содержимое поля x_string
 		this.canvas.drawText({
@@ -486,10 +488,3 @@ KissGraphics.prototype.renderLabels = function(options) {
 		});
 	}
 };
-
-// KissGraphics.prototype.save = function() {
-// 	var c = this.canvas[0];
-// 	var d = c.toDataURL("image/png");
-// 	var w = window.open('about:blank','image from canvas');
-// 	w.document.write("<img src='" + d + "' alt='from canvas'/>");
-// };
