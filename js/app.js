@@ -21,10 +21,10 @@ $(function() {
 		$('#tree-viewer').find("ul").detach();
 
 		$.map( graph.vertexes, function(vertex, i) {
-			var node = $('#tree-viewer').append("<ul class='tree-node'><b>" + vertex.name + "</b></ul>");
+			var node = $('#tree-viewer #tree').append("<ul class='node'><b>" + vertex.name + "</b></ul>");
 			
 			$.map( vertex.transitions, function(transition) {
-				$("#tree-viewer .tree-node:last")
+				$("#tree-viewer #tree .node:last")
 					.append("<li>"
 						+ transition.vertex.name
 						+ " (in: "

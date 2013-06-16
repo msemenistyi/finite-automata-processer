@@ -16,6 +16,7 @@
 }
 
 #tree-viewer {
+	display: block;
 	top: 2px;
 	left: 2px;
 	border: 1px solid #123;
@@ -24,14 +25,25 @@
 	min-height: 100px;
 	min-width: 200px;
 	width: 20%;
-	overflow: auto;
 }
 
-.tree-node {
+#tree-viewer #tree {
+	display: block;
+	margin: 5px 5px 5px 0px;
+	overflow: auto;
+	width: 100%;
+	height: 94%;
+}
+
+#tree-viewer #search {
+	width: 100%;
+}
+
+#tree-viewer ul.node {
 	padding: 0px;
 	margin: 0px;
 }
 
-.tree-node li {
+#tree-viewer ul.node li {
 	margin-left: 20px;
 }
