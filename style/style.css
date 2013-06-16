@@ -11,6 +11,27 @@
 }
 
 #source-text {
-	height: 400px;
+	height: 300px;
 	width: 100%;
+}
+
+#tree-viewer {
+	top: 2px;
+	left: 2px;
+	border: 1px solid #123;
+	border-radius: 2px;
+	height: 98%;
+	min-height: 100px;
+	min-width: 200px;
+	width: 20%;
+	overflow: auto;
+}
+
+.tree-node {
+	padding: 0px;
+	margin: 0px;
+}
+
+.tree-node li {
+	margin-left: 20px;
 }

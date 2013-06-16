@@ -1,20 +1,26 @@
 <html>
 <head>
-	<title>Kiss2 visualiser</title>
+	<title>Graph Editor</title>
 	<link rel="stylesheet" type="text/css" href="style/style.css">
-	<script type="text/javascript" src="js/libs/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="js/libs/jquery-2.0.2.min.js"></script>
+	<script type="text/javascript" src="js/libs/knockout-2.2.1.js"></script>
 <!--
-	<script type="text/javascript" src="js/libs/knockout-2.2.0.js"></script>
 	<script type="text/javascript" src="js/libs/jcanvas.min.js"></script>
 	<script type="text/javascript" src="js/libs/mediator.min.js"></script>
 -->
 	<script type="text/javascript" src="js/Vertex.js"></script>
 	<script type="text/javascript" src="js/Transition.js"></script>
-	<script type="text/javascript" src="js/parsers/KissParser.js"></script>
-	<script type="text/javascript" src="js/parsers/Parser.js"></script>
+	<script type="text/javascript" src="js/converter/Kiss2Format.js"></script>
+	<script type="text/javascript" src="js/converter/XmlmFormat.js"></script>
+	<script type="text/javascript" src="js/converter/GvFormat.js"></script>
+	<script type="text/javascript" src="js/converter/Converter.js"></script>
+	<script type="text/javascript" src="js/Graph.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
 </head>
 <body>
+	<div id="tree-viewer">
+		<input type="text" id="tree-search">
+	</div>
 	<div id="input-form">
 		<textarea id="source-text"></textarea>
 		<br>
