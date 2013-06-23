@@ -9,7 +9,7 @@ $(function() {
 			return;
 		}
 
-		var result = graph.getFormat( { format: "kiss2" } );
+		var result = graph.getFormat( { format: "gv" } );
 
 		if ( graph.conv.lastErrorCode != 0x00 ) {
 			alert( "Trying to get format.\nError: " + graph.conv.getErrorString() );

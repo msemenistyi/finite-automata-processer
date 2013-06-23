@@ -102,7 +102,7 @@ Kiss2Format.prototype.getFormated = function(options) {
 		+ ".p " + pVal + "\n";
 
 	$.map(options.vertexes, function(vertex) {
-		console.log(vertex);
+		// console.log(vertex);
 		$.map(vertex.transitions, function(transition) {
 			result += transition.condIn + " "
 				   +  vertex.name + " "
