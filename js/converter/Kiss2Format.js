@@ -7,15 +7,10 @@ Kiss2Format.prototype.parse = function(options) {
 
 	var rows = options.source.split("\n");
 
-	var iVal = self._lookForNumber( { rows: rows, header: ".i" } );
-	var oVal = self._lookForNumber( { rows: rows, header: ".o" } );
-	var pVal = self._lookForNumber( { rows: rows, header: ".p" } );
-	var sVal = self._lookForNumber( { rows: rows, header: ".s" } );
-
 	var vertexes = [];
 	var statesArray = [];
 
-	$.map(rows, function(row) {
+	_.map(rows, function(row) {
 		var splittedState = row.split(/\s+/);
 		if ( splittedState.length == 4 ) {
 			statesArray.push( splittedState );
@@ -23,7 +18,7 @@ Kiss2Format.prototype.parse = function(options) {
 	});
 
 	// Create collection of vertexes
-	$.map(statesArray, function(state) {
+	_.map(statesArray, function(state) {
 		var vertex = self._getVertex( { vertexes: vertexes, name: state[1] } );
 		if (vertex == null) {
 			vertexes.push( new Vertex( { name: state[1] } ) );
@@ -31,7 +26,7 @@ Kiss2Format.prototype.parse = function(options) {
 	});
 
 	// Fill transition fields for each vertex in collection
-	$.map(vertexes, function(vertex) {
+	_.map(vertexes, function(vertex) {
 		for (var i = 0; i < statesArray.length; ++i) {
 			var state = statesArray[i];
 			if ( vertex.name === state[1] ) {
@@ -47,35 +42,55 @@ Kiss2Format.prototype.parse = function(options) {
 		}
 	});
 
+	if ( self._checkParams( {vertexes: vertexes, rows: rows}) )
+	{
+		return vertexes;
+	}
+
+	return null;
+};
+
+Kiss2Format.prototype._checkParams = function(options) {
+	if ( options == null ||
+		 options.rows == null ||
+		 options.vertexes == null) {
+		return false;
+	}
+
+	var iVal = this._lookForNumber( { rows: options.rows, header: ".i" } );
+	var oVal = this._lookForNumber( { rows: options.rows, header: ".o" } );
+	var pVal = this._lookForNumber( { rows: options.rows, header: ".p" } );
+	var sVal = this._lookForNumber( { rows: options.rows, header: ".s" } );
+
 	// Check for parameter .p
 	var pValRes = 0;
-	$.map(vertexes, function(vertex) {
+	_.map(options.vertexes, function(vertex) {
 		// Check for correct transitions
 		if ( vertex.transitions.length > Math.pow(2, iVal) ) {
-			return null;
+			return false;
 		}
-		$.map(vertex.transitions, function(transition) {
+		_.map(vertex.transitions, function(transition) {
 			pValRes++;
 			if ( transition.vertex == null ||
 				// Check for parameter .i
 				transition.condIn != iVal ||
 				// Check for parameter .o
 				transition.condOut != oVal ) {
-				return null;
+				return false;
 			}
 		});
 	});
 
 	if ( pValRes != pVal ) {
-		return null;
+		return false;
 	}
 
 	// Check for parameter .s
-	if ( vertexes.length != sVal ) {
-		return null;
+	if ( options.vertexes.length != sVal ) {
+		return false;
 	}
 
-	return vertexes;
+	return true;
 };
 
 // convert array of Vertexes to text (Kiss2 format)
@@ -91,7 +106,7 @@ Kiss2Format.prototype.getFormated = function(options) {
 
 	var pVal = 0;
 
-	$.map(options.vertexes, function(vertex) {
+	_.map(options.vertexes, function(vertex) {
 		pVal += vertex.transitions.length;
 	});
 
@@ -101,9 +116,9 @@ Kiss2Format.prototype.getFormated = function(options) {
 		+ ".s " + sVal + "\n"
 		+ ".p " + pVal + "\n";
 
-	$.map(options.vertexes, function(vertex) {
+	_.map(options.vertexes, function(vertex) {
 		// console.log(vertex);
-		$.map(vertex.transitions, function(transition) {
+		_.map(vertex.transitions, function(transition) {
 			result += transition.condIn + " "
 				   +  vertex.name + " "
 				   +  transition.vertex.name + " "
@@ -141,8 +156,7 @@ Kiss2Format.prototype._lookForNumber = function(options) {
 	return 0;
 };
 
-
-// return reference to Vertex (from self.vertexes) with specified name
+// return reference to Vertex (from options.vertexes) with specified name
 Kiss2Format.prototype._getVertex = function(options) {
 	for (var i = options.vertexes.length-1; i >= 0; --i) {
 		if ( options.vertexes[i].name === options.name ) {
@@ -151,20 +165,3 @@ Kiss2Format.prototype._getVertex = function(options) {
 	}
 	return null;
 };
-
-// // Convert record "0101" to form "!x4x3!x2x1"
-// // x - specified name => options.text
-// Kiss2Format.prototype._getCondition = function(options) {
-// 	var count = options.condition.length;
-// 	var result = "";
-
-// 	for (var i = 0; i < count; i++) {
-// 		if (options.condition[i] == 0) {
-// 			result += "!" + options.text + (count - i - 1);
-// 		}
-// 		else if (options.condition[i] == 1) {
-// 			result += options.text + (count - i - 1);
-// 		}
-// 	}
-// 	return result;
-// };

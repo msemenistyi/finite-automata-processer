@@ -47,3 +47,9 @@
 #tree-viewer ul.node li {
 	margin-left: 20px;
 }
+
+#editor {
+	top: 0px;
+	position: absolute;
+	margin-left: 25%;
+}
