@@ -25,6 +25,7 @@
 	min-height: 100px;
 	min-width: 200px;
 	width: 20%;
+	position: fixed;
 }
 
 #tree-viewer #tree {
